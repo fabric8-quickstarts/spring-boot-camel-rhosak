@@ -1,0 +1,14 @@
+# Startup configuration of Spring-cloud-kubernetes
+spring:
+  application:
+    name: qs-sb2-camel-rhosak
+  cloud:
+    kubernetes:
+      config:
+        name: spring-boot-camel-rhosak
+        enableApi: true
+      reload:
+        # Enable live reload on ConfigMap change (disabled for Secrets by default)
+        enabled: true
+        strategy: restart_context
+        mode: event

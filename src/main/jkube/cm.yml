@@ -1,0 +1,6 @@
+metadata:
+  name: ${project.artifactId}
+  labels:
+    sb.config: camel.springboot.rhosak
+  annotations:
+    maven.jkube.io/cm/application.properties: ${project.basedir}/src/main/resources/application.properties

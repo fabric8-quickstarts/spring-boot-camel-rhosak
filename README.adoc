@@ -1,0 +1,192 @@
+= Spring Boot Camel Red Hat OpenShift Streams for Apache Kafka Quickstart
+
+=== Preparing the Kafka instance
+
+The quickstart can run with any Kafka instance. However we want to focus
+how to connect a Red Hat OpenShift Streams for Apache Kafka to Camel.
+In order to use it, you must login to the
+https://cloud.redhat.com/beta/[Red Hat Cloud (Beta)]. Please, consider
+the due https://access.redhat.com/articles/5979061[limitations] of this
+offering at the time of writing this tutorial.
+
+==== Create an instance and a topic
+
+In order to setup an instance and your first topic, you can follow up
+the
+https://cloud.redhat.com/beta/application-services/streams/resources?quickstart=getting-started[UI
+quickstart] or use the
+https://access.redhat.com/documentation/en-us/red_hat_openshift_streams_for_apache_kafka/1/guide/f520e427-cad2-40ce-823d-96234ccbc047[rhoas
+CLI].
+
+____
+*Note:* we assume in this tutorial that you are creating a topic named
+`test`. You can use any other name, just make sure to reflect the name
+chosen in the `application.properties` configuration file.
+____
+
+==== Prepare Kafka credentials
+
+Once you’ve setup your first topic, you must create a set of credentials
+that you will be using during this quickstart:
+
+* https://access.redhat.com/documentation/en-us/red_hat_openshift_streams_for_apache_kafka/1/guide/f351c4bd-9840-42ef-bcf2-b0c9be4ee30a#_7cb5e3f0-4b76-408d-b245-ff6959d3dbf7[Create
+a service account via UI]
+* https://access.redhat.com/documentation/en-us/red_hat_openshift_streams_for_apache_kafka/1/guide/f520e427-cad2-40ce-823d-96234ccbc047#_5199d61c-8435-45b0-83f2-9c8c93ef3e31[Create
+a service account via CLI].
+
+At this stage you should have the following credentials: a
+`kafka bootstrap URL`, a `service account id` and a
+`service account secret`.
+
+=== Standalone
+
+This example demonstrates using the camel-kafka component with Red Hat
+Fuse on Spring Boot to produce and consume kafka messages.
+
+In this example, a Camel route produce at a fixed rate of 5s, String
+messages that are sent to kafka. A second route is subscribed to the
+kafka topic and print out the messages received.
+
+=== Prerequisites
+
+* Maven
+* Configured kafka instance, topic and credentials on RHOSAK
+* A java version that support TLS 1.3 protocol, eg. from https://www.oracle.com/java/technologies/javase/8u261-relnotes.html[Oracle JDK 8u261-b12] or https://bugs.openjdk.java.net/browse/JDK-8245466[AdoptOpenJDK 8u272-b10] or above
+
+
+=== Running the example
+
+To run the example
+
+[arabic]
+. Change your working directory to `resources` directory.
+. edit `application.properties` with parameters from RHOSAK, in particular:
++
+[source,java-properties]
+----
+## Modify value of <FILL_ME> before running application
+kafka.brokers = <FILL_ME>
+# Service Account info
+sa.client.id=<FILL_ME>
+sa.client.secret=<FILL_ME>
+----
+
+==== Running the example on Red Hat Fuse Standalone
+. Build the project
++
+....
+ mvn clean package
+....
+
+. Start the fat jar
++
+....
+ mvn spring-boot:run
+....
++
+In the logs, you should see somethig like this:
++
+....
+2021-06-04 12:27:04.807  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+2021-06-04 12:27:09.825  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+2021-06-04 12:27:14.764  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+2021-06-04 12:27:19.848  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+2021-06-04 12:27:24.765  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+2021-06-04 12:27:29.762  INFO 1106408 --- [aConsumer[test]] kafka-consumer                           : Greetings at fixed rate
+....
+
+==== Running the example on Openshift
+IMPORTANT: You need to run this example on Container Development Kit 3.3 or OpenShift 3.7.
+Both of these products have suitable Fuse images pre-installed.
+If you run it in an environment where those images are not preinstalled follow the steps described in <<single-node-without-preinstalled-images>>.
+
+
+To deploy this quickstart to a running OpenShift cluster:
+
+. Download the project and extract the archive on your local filesystem.
+
+. Log in to your OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc login -u developer -p developer
+----
+
+. Create a new OpenShift project for the quickstart:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc new-project MY_PROJECT_NAME
+----
+
+. Change the directory to the folder that contains the extracted quickstart application (for example, `my_openshift/spring-boot-camel-rhosak`) :
+
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ cd my_openshift/spring-boot-camel-rhosak
+----
+
+. Build and deploy the project to the OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ mvn clean -DskipTests oc:deploy -Popenshift
+----
+
+. List all the running pods:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc get pods
+----
+
+. Find the name of the pod that runs this quickstart. Output the logs from the running pods and see the messages sent by Camel:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc logs <name of pod>
+----
+
+[#single-node-without-preinstalled-images]
+=== Running the Quickstart on a single-node Kubernetes/OpenShift cluster without preinstalled images
+
+A single-node Kubernetes/OpenShift cluster provides you with access to a cloud environment that is similar to a production environment.
+
+If you have a single-node Kubernetes/OpenShift cluster, such as Minishift or the Red Hat Container Development Kit, link:http://appdev.openshift.io/docs/minishift-installation.html[installed and running], you can deploy your quickstart there.
+
+. Log in to your OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc login -u developer -p developer
+----
+
+. Create a new OpenShift project for the quickstart:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ oc new-project MY_PROJECT_NAME
+----
+
+. Import base images in your newly created project (MY_PROJECT_NAME) according to https://access.redhat.com/documentation/en-us/red_hat_fuse/7.7/html/fuse_on_openshift_guide/get-started-non-admin[documentation].
+
+. Change the directory to the folder that contains the extracted quickstart application (for example, `my_openshift/spring-boot-camel-rhosak`) :
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ cd my_openshift/spring-boot-camel-rhosak
+----
+
+. Build and deploy the project to the OpenShift cluster:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+$ mvn clean -DskipTests oc:deploy -Popenshift -Djkube.generator.fromMode=istag -Djkube.generator.from=MY_PROJECT_NAME/fuse7-java-openshift:1.8
+----
+
+. In your browser, navigate to the `MY_PROJECT_NAME` project in the OpenShift console.
+Wait until you can see that the pod for the `spring-boot-camel-rhosak` has started up.
+
+. On the project's `Overview` page, navigate to the details page deployment of the `spring-boot-camel-rhosak` application: `https://OPENSHIFT_IP_ADDR:8443/console/project/MY_PROJECT_NAME/browse/pods/spring-boot-camel-rhosak-NUMBER_OF_DEPLOYMENT?tab=details`.
+
+. Switch to tab `Logs` and then see the messages sent by Camel.
