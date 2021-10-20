@@ -211,7 +211,7 @@
                                         </property>
                                         <property>
                                             <name>rht.comp</name>
-                                            <value>spring-boot-camel-amq</value>
+                                            <value>spring-boot-camel-rhosak</value>
                                         </property>
                                         <property>
                                             <name>rht.comp_ver</name>
