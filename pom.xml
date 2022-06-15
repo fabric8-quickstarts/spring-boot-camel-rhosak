@@ -19,7 +19,7 @@
 
     <groupId>io.fabric8.quickstarts</groupId>
     <artifactId>spring-boot-camel-rhosak</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>7.11.0.fuse-sb2-7_11_0-00022</version>
 
     <name>Fabric8 :: Quickstarts :: Spring Boot :: Camel and Red Hat OpenShift Streams for Apache Kafka</name>
     <description>Camel route using Red Hat OpenShift Streams for Apache Kafka in Karaf container</description>
@@ -29,7 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- configure the versions you want to use here -->
-        <fuse.bom.version>7.11.0.fuse-sb2-7_11_0-00014</fuse.bom.version>
+        <fuse.bom.version>7.11.0.fuse-sb2-7_11_0-00025</fuse.bom.version>
         <docker.image.version>1.11</docker.image.version>
 
         <!-- maven plugin versions -->
